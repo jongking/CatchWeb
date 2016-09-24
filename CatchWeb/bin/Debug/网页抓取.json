@@ -1,0 +1,32 @@
+{
+	CatchWebSite:{
+		Url:"http://www.jb51.net/article/32308.htm",
+		Encode:"GB2312",
+		CatchWebContents:
+		[
+			{
+				SqlTableName:"Text",
+				RemoveDuplicate:"Title",
+				WebContentParts:
+				[
+					{
+						Title:"Title",
+						Query:"div.title > h1.YaHei"
+					}
+				]
+			},
+			{
+				WebContentParts:
+				[
+					{
+						Title:"Title",
+						Query:"div.title > h1.YaHei"
+					}
+				]
+			}
+		]
+	},
+	MsSqlServerConfig:{
+		ConnectionString:"Server=.\\sql2012;Database=ChainShop_5_0;uid=sa;pwd=123"
+	}
+}
