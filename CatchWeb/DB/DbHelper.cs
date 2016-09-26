@@ -183,11 +183,27 @@ namespace JHelper.DB
             return ExecuteScalar(ssc.ToString());
         }
 
-        public static object InsertDictionary(Dictionary<string, string> inserts, string tableName)
+        public static int InsertDictionary(Dictionary<string, object> inserts, string tableName, string name = "con")
         {
             var ssc = SimpleSqlCreater.Insert(tableName)
                 .GetParamsFromDictory(inserts);
-            return ExecuteScalar(ssc.ToString());
+
+            //使用dbCommand
+            var db = GetDatabase(name);
+            DbCommand insertCommand = db.GetSqlStringCommand(ssc.ToString());
+            foreach (var insert in inserts)
+            {
+                if (insert.Value is byte[])
+                {
+                    db.AddInParameter(insertCommand, insert.Key, DbType.Binary, insert.Value);
+                }
+                else
+                {
+                    db.AddInParameter(insertCommand, insert.Key, DbType.String, insert.Value);
+                }
+            }
+
+            return db.ExecuteNonQuery(insertCommand);
         }
 
         public static object InsertModel<T>(T model)

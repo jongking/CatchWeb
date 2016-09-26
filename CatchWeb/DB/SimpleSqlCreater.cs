@@ -217,14 +217,14 @@ namespace JHelper.DB
             return this;
         }
 
-        public SimpleSqlCreater GetParamsFromDictory(Dictionary<string, string> dicts)
+        public SimpleSqlCreater GetParamsFromDictory(Dictionary<string, object> dicts)
         {
             foreach (var dict in dicts)
             {
                 if (dict.Key == "Id") continue;
 
                 string propertyName = dict.Key;
-                this.AddParam(propertyName, "'" + dict.Value.Replace("'", "''") + "'");
+                this.AddParam(propertyName, "@" + dict.Key + "");
             }
 
             return this;
