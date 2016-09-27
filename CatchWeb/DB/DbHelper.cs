@@ -197,6 +197,10 @@ namespace JHelper.DB
                 {
                     db.AddInParameter(insertCommand, insert.Key, DbType.Binary, insert.Value);
                 }
+                else if (insert.Value is DateTime)
+                {
+                    db.AddInParameter(insertCommand, insert.Key, DbType.DateTime, insert.Value);
+                }
                 else
                 {
                     db.AddInParameter(insertCommand, insert.Key, DbType.String, insert.Value);

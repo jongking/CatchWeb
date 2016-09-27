@@ -1,7 +1,7 @@
 {
 	CatchWebSite:{
     Url: "http://www.javbooks.com/index.php?&now_page={1}",
-    Param1: "1[TO]3",
+    Param1: "1[TO]2",
     Encode: "UTF-8",
     Proxyurl: "http://127.0.0.1:30000/",
 		CatchWebContents:
@@ -34,13 +34,30 @@
                 CatchWebContents:
 		            [
 			            {
-				            SqlTableName:"MovieDetails",
-				            RemoveDuplicate:"MovieNo",
+				            IsInsertToParent:true,
 				            WebContentParts:
 				            [
-					            {
-						            Title:"MovieNo",
+                      {
+                        Title: "MovieNo",
                         Query: "font[color='#A63600']"
+                      },
+					            {
+						            Title:"PublishDate",
+                        Query: "div.infobox:eq(1)",
+                        LastStartWith: "</b>",
+                        IsHtml:true ,
+                        IsDate:true 
+					            },
+                      {
+						            Title:"MovieTime",
+                        Query: "div.infobox:eq(2)",
+                        LastStartWith: "</b>",
+                        IsHtml:true
+					            },
+                      {
+						            Title:"Player",
+                        Query: "div.infobox:eq(3) > div.infobox_text > a",
+                        JoinBy: "||"
 					            }
 				            ]
 			            }
@@ -52,13 +69,13 @@
 						Title:"thumbnailHref",
             Query: "div.Po_topicCG > a > img",
             Attr: "src"
-					},
-					{
-						Title:"thumbnailImg",
-            Query: "div.Po_topicCG > a > img",
-            Attr: "src",
-            IsImage: true
 					}
+					//,{
+					//	Title:"thumbnailImg",
+          //  Query: "div.Po_topicCG > a > img",
+          //  Attr: "src",
+          //  IsImage: true
+					//}
 				]
 			}
 		]

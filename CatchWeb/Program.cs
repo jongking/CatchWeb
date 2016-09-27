@@ -9,7 +9,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using CsQuery;
+using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
+using CsQuery.Output;
 using JHelper.DB;
 using Newtonsoft.Json;
 
@@ -26,6 +28,7 @@ namespace CatchWeb
                 //if (args.Length == 0) throw new Exception("没有输入文件");
 //                var inputtxt = args[0];
                 var inputtxt = @"F:\Github\CatchWeb\CatchWeb\网页抓取.json";
+                CsQuery.Config.HtmlEncoder = new HtmlEncoderMinimum();
                 var inputtxts = File.ReadAllText(inputtxt);
                 var cwdsl = JsonConvert.DeserializeObject<CatchWebDsl>(inputtxts);
                 if (cwdsl.MsSqlServerConfig != null && cwdsl.MsSqlServerConfig.ConnectionString != "")
@@ -48,7 +51,7 @@ namespace CatchWeb
             }
         }
 
-        public static void CatchWebSiteFun(CatchWebSiteModel catchWebSite, string param0 = "")
+        public static void CatchWebSiteFun(CatchWebSiteModel catchWebSite, string param0 = "", Dictionary<string, object> parentInsert = null)
         {
             var url = catchWebSite.Url;
             var start = 0;
@@ -78,21 +81,29 @@ namespace CatchWeb
                 {
                     var inserts = new List<Dictionary<string, object>>();
                     CQ dom = mainhtml;
+                    var joinByList = new List<string>();
                     var notonece = false;
                     foreach (var webContentPartsModel in catchWebContentModel.WebContentParts)
                     {
                         var cq = dom[webContentPartsModel.Query];
                         for (int j = 0; j < cq.Length; j++)
                         {
-                            var query = cq[j];
+                            var query = cq.Eq(j);
                             var text = "";
                             if (webContentPartsModel.Attr == "")
                             {
-                                text = query.FirstChild.ToString();
+                                if (!webContentPartsModel.IsHtml)
+                                {
+                                    text = query.Text();
+                                }
+                                else
+                                {
+                                    text = query.Html();
+                                }
                             }
                             else
                             {
-                                text = query.Attributes.GetAttribute(webContentPartsModel.Attr);
+                                text = query.Attr(webContentPartsModel.Attr);
                             }
                             if (webContentPartsModel.LastStartWith.Length > 0)
                             {
@@ -107,34 +118,48 @@ namespace CatchWeb
                                 text = webContentPartsModel.BeforeAdd + text;
                             }
 
-                            if (notonece)
+                            if (webContentPartsModel.JoinBy.Length > 0)
                             {
-                                if (!webContentPartsModel.IsImage)
+                                joinByList.Add(text);
+                                if (i + 1 < end)
                                 {
-                                    inserts[j].Add(webContentPartsModel.Title, text);
+                                    continue;
                                 }
                                 else
                                 {
-                                    inserts[j].Add(webContentPartsModel.Title, get_image(text, catchWebSite.Proxyurl, catchWebSite.Proxyuser, catchWebSite.Proxypw));
+                                    text = string.Join(webContentPartsModel.JoinBy, joinByList);
                                 }
+                            }
+
+                            object insertvalue;
+                            if (webContentPartsModel.IsImage)
+                            {
+                                insertvalue = get_image(text, catchWebSite.Proxyurl, catchWebSite.Proxyuser,
+                                    catchWebSite.Proxypw);
+                            }
+                            else if (webContentPartsModel.IsDate)
+                            {
+                                insertvalue = Convert.ToDateTime(text);
+                            }
+                            else
+                            {
+                                insertvalue = text;
+                            }
+
+                            if (notonece)
+                            {
+                                inserts[j].Add(webContentPartsModel.Title, insertvalue);
                             }
                             else
                             {
                                 var d = new Dictionary<string, object>();
-                                if (!webContentPartsModel.IsImage)
-                                {
-                                    d.Add(webContentPartsModel.Title, text);
-                                }
-                                else
-                                {
-                                    d.Add(webContentPartsModel.Title, get_image(text, catchWebSite.Proxyurl, catchWebSite.Proxyuser, catchWebSite.Proxypw));
-                                }
+                                d.Add(webContentPartsModel.Title, insertvalue);
                                 inserts.Add(d);
                             }
                             Console.WriteLine("标题:" + webContentPartsModel.Title + " 内容:" + text);
                             foreach (var catchWebSiteModel in webContentPartsModel.CatchWebSites)
                             {
-                                CatchWebSiteFun(catchWebSiteModel, text);
+                                CatchWebSiteFun(catchWebSiteModel, text, inserts[j]);
                             }
                         }
                         notonece = true;
@@ -154,6 +179,13 @@ namespace CatchWeb
                             {
                                 DbHelper.InsertDictionary(inserts[j], catchWebContentModel.SqlTableName);
                             }
+                        }
+                    }
+                    if (catchWebContentModel.IsInsertToParent && parentInsert != null && inserts.Any())
+                    {
+                        foreach (var childinsert in inserts[0])
+                        {
+                            parentInsert.Add(childinsert.Key, childinsert.Value);
                         }
                     }
                 }
@@ -260,6 +292,7 @@ namespace CatchWeb
     {
         public string SqlTableName = "";
         public string RemoveDuplicate = "";
+        public bool IsInsertToParent = false;
         public List<WebContentPartsModel> WebContentParts = new List<WebContentPartsModel>();
     }
 
@@ -270,7 +303,10 @@ namespace CatchWeb
         public string Attr = "";
         public string BeforeAdd = "";
         public string LastStartWith = "";
+        public string JoinBy = "";
         public bool IsImage = false;
+        public bool IsDate = false;
+        public bool IsHtml = false;
         public List<CatchWebSiteModel> CatchWebSites = new List<CatchWebSiteModel>();
     }
 
