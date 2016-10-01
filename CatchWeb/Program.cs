@@ -30,9 +30,9 @@ namespace CatchWeb
             SqlConnection cn = null;
             try
             {
-                if (args.Length == 0) throw new Exception("没有输入文件");
-                var inputtxt = args[0];
-                //var inputtxt = @"F:\Github\CatchWeb\CatchWeb\网页抓取.json";
+//                if (args.Length == 0) throw new Exception("没有输入文件");
+//                var inputtxt = args[0];
+                var inputtxt = @"F:\Github\CatchWeb\CatchWeb\网页抓取.json";
                 CsQuery.Config.HtmlEncoder = new HtmlEncoderMinimum();
                 var inputtxts = File.ReadAllText(inputtxt);
                 var cwdsl = JsonConvert.DeserializeObject<CatchWebDsl>(inputtxts);
@@ -207,7 +207,7 @@ namespace CatchWeb
                                 d.Add(webContentPartsModel.Title, insertvalue);
                                 inserts.Add(d);
                             }
-                            //Console.WriteLine("标题:" + webContentPartsModel.Title + " 内容:" + text);
+                            Console.WriteLine("标题:" + webContentPartsModel.Title + " 内容:" + text);
                             foreach (var catchWebSiteModel in webContentPartsModel.CatchWebSites)
                             {
                                 Thread.Sleep(SleepTime);

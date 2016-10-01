@@ -12,3 +12,12 @@ F:\GitHub\CatchWeb\CatchWeb\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Comm
 F:\GitHub\CatchWeb\CatchWeb\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
 F:\GitHub\CatchWeb\CatchWeb\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.xml
 F:\GitHub\CatchWeb\CatchWeb\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.xml
+F:\Github\CatchWeb\CatchWeb\bin\Debug\EntLibContrib.Data.SQLite.dll
+F:\Github\CatchWeb\CatchWeb\bin\Debug\EntityFramework.dll
+F:\Github\CatchWeb\CatchWeb\bin\Debug\EntityFramework.SqlServer.dll
+F:\Github\CatchWeb\CatchWeb\bin\Debug\System.Data.SQLite.dll
+F:\Github\CatchWeb\CatchWeb\bin\Debug\System.Data.SQLite.EF6.dll
+F:\Github\CatchWeb\CatchWeb\bin\Debug\System.Data.SQLite.Linq.dll
+F:\Github\CatchWeb\CatchWeb\bin\Debug\EntityFramework.xml
+F:\Github\CatchWeb\CatchWeb\bin\Debug\EntityFramework.SqlServer.xml
+F:\Github\CatchWeb\CatchWeb\bin\Debug\System.Data.SQLite.xml

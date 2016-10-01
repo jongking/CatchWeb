@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Transactions;
+using EntLibContrib.Data.SQLite;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.EnterpriseLibrary.Data.Sql;
 
 namespace JHelper.DB
@@ -13,8 +15,8 @@ namespace JHelper.DB
     public static class DbHelper
     {
         public static bool IsDebug = false;
-        public static Dictionary<string, SqlDatabase> SqlServerDbPool = new Dictionary<string, SqlDatabase>();
-        public static SqlDatabase GetDatabase(string name = "con", string connectionString = "")
+        public static Dictionary<string, Database> SqlServerDbPool = new Dictionary<string, Database>();
+        public static Database GetDatabase(string name = "con", string connectionString = "")
         {
             if (SqlServerDbPool.ContainsKey(name))
             {
@@ -22,7 +24,15 @@ namespace JHelper.DB
             }
             else
             {
-                SqlDatabase sqlServerDb = new SqlDatabase(connectionString);
+                Database sqlServerDb;
+                if (connectionString.IndexOf("Version", StringComparison.Ordinal) == -1)
+                {
+                    sqlServerDb = new SqlDatabase(connectionString);
+                }
+                else
+                {
+                    sqlServerDb = new SQLiteDatabase(connectionString);
+                }
                 SqlServerDbPool.Add(name, sqlServerDb);
                 return sqlServerDb;
             }

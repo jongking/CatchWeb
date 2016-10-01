@@ -1,7 +1,7 @@
 {
 	CatchWebSite:{
     Url: "http://www.javbooks.com/index.php?&now_page={1}",
-    Param1: "99[TO]103",
+    Param1: "100",
     Encode: "UTF-8",
     Proxyurl: "http://127.0.0.1:30000/",
 		CatchWebContents:
@@ -173,6 +173,7 @@
 	},
   MsSqlServerConfig: {
     ConnectionString: "Server=.\\sql2005;Database=JavBt;uid=sa;pwd=123"
+    //ConnectionString: "Data Source=E:\\databasen\\JavBt.db;Version=3;"
   },
   SleepTime: 2000
 }
