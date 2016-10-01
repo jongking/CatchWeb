@@ -1,14 +1,14 @@
 {
 	CatchWebSite:{
     Url: "http://www.javbooks.com/index.php?&now_page={1}",
-    Param1: "1[TO]2",
+    Param1: "99[TO]103",
     Encode: "UTF-8",
     Proxyurl: "http://127.0.0.1:30000/",
 		CatchWebContents:
 		[
 			{
 				SqlTableName:"MovieDetailList",
-				RemoveDuplicate:"Title",
+				BeforeRemoveDuplicate:"MovieId",
 				WebContentParts:
 				[
 					{
@@ -26,42 +26,133 @@
             Query: "div.Po_topic_title > a",
             Attr: "href",
             BeforeAdd: "http://www.javbooks.com/",
-            CatchWebSites: [
+            CatchWebSites: 
+            [
               {
                 Url: "{0}",
                 Encode: "UTF-8",
                 Proxyurl: "http://127.0.0.1:30000/",
-                CatchWebContents:
-		            [
-			            {
-				            IsInsertToParent:true,
-				            WebContentParts:
-				            [
+                CatchWebContents: [
+                  {
+                    IsInsertToParent: true,
+                    WebContentParts: [
                       {
                         Title: "MovieNo",
-                        Query: "font[color='#A63600']"
+                        Query: "font[color='#A63600']",
+                        IsTrim: true,
+                        CatchWebSites: 
+                        [
+                          {
+                            Url: "http://zh.btdb.in/q/{0}/",
+                            Encode: "UTF-8",
+                            Proxyurl: "http://127.0.0.1:30000/",
+                            CatchWebContents: [
+                              {
+                                SqlTableName: "BTDBInfo",
+                                Param0Title: "MovieNo",
+                                WebContentParts: [
+                                  {
+                                    Title: "TitleName",
+                                    Query: "h2.item-title > a",
+                                    Attr: "title",
+                                  },
+                                  {
+                                    Title: "MagnetLink",
+                                    Query: "div.item-meta-info > a.magnet",
+                                    Attr: "href",
+                                  },
+                                  {
+                                    Title: "ThunderLink",
+                                    Query: "div.item-meta-info > a.thunder",
+                                    Attr: "href",
+                                  },
+                                  {
+                                    Title: "FileSize",
+                                    Query: "div.item-meta-info",
+                                    FindQuery: "span.item-meta-info-value:eq(0)"
+                                  },
+                                  {
+                                    Title: "FileNum",
+                                    Query: "div.item-meta-info",
+                                    FindQuery: "span.item-meta-info-value:eq(1)"
+                                  },
+                                  {
+                                    Title: "FileCreateTime",
+                                    Query: "div.item-meta-info",
+                                    FindQuery: "span.item-meta-info-value:eq(2)"
+                                  },
+                                  {
+                                    Title: "FileHot",
+                                    Query: "div.item-meta-info",
+                                    FindQuery: "span.item-meta-info-value:eq(3)"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
                       },
-					            {
-						            Title:"PublishDate",
+                      {
+                        Title: "PublishDate",
                         Query: "div.infobox:eq(1)",
                         LastStartWith: "</b>",
-                        IsHtml:true ,
-                        IsDate:true 
-					            },
+                        IsHtml: true,
+                        IsDate: true
+                      },
                       {
-						            Title:"MovieTime",
+                        Title: "MovieTime",
                         Query: "div.infobox:eq(2)",
                         LastStartWith: "</b>",
-                        IsHtml:true
-					            },
+                        IsHtml: true
+                      },
                       {
-						            Title:"Player",
+                        Title: "Player",
                         Query: "div.infobox:eq(3) > div.infobox_text > a",
                         JoinBy: "||"
-					            }
-				            ]
-			            }
-		            ]
+                      },
+                      {
+                        Title: "Director",
+                        Query: "div.infobox:eq(4) > a"
+                      },
+                      {
+                        Title: "Producer",
+                        Query: "div.infobox:eq(5) > a"
+                      },
+                      {
+                        Title: "Publisher",
+                        Query: "div.infobox:eq(6) > a"
+                      },
+                      {
+                        Title: "Series",
+                        Query: "div.infobox:eq(7)",
+                        LastStartWith: "<br>",
+                        IsHtml: true
+                      },
+                      {
+                        Title: "Category",
+                        Query: "div.infobox:eq(8) > div.infobox_text > a",
+                        JoinBy: "||"
+                      },
+                      {
+                        Title: "MovieGallery",
+                        Query: "#Preview_CG > div.gallery > div.hvr-grow > a",
+                        Attr: "href",
+                        JoinBy: "||"
+                      },
+                      {
+                        Title: "CoverHref",
+                        Query: "#img > img",
+                        Attr: "src"
+                      }
+                      //,{
+                      //	Title:"CoverImg",
+                      //  Query: "#img > img",
+                      //  Attr: "src",
+                      //  IsImage: true
+                      //}
+                    ]
+                  }
+                ]
               }
             ]
 					},
@@ -80,7 +171,8 @@
 			}
 		]
 	},
-	MsSqlServerConfig:{
-		ConnectionString:"Server=.\\sql2005;Database=JavBt;uid=sa;pwd=123"
-	}
+  MsSqlServerConfig: {
+    ConnectionString: "Server=.\\sql2005;Database=JavBt;uid=sa;pwd=123"
+  },
+  SleepTime: 2000
 }
