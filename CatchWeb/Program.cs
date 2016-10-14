@@ -72,21 +72,23 @@ namespace CatchWeb
                     start = Convert.ToInt32(catchWebSite.Param1.Substring(0, indexof));
                     end = Convert.ToInt32(catchWebSite.Param1.Substring(indexof + 4));
                 }
-                else
-                {
-                    url = string.Format(url, param0, catchWebSite.Param1);
-                }
             }
 
             for (int i = start; i < end; i++)
             {
-                if (param0!= "" || catchWebSite.Param1 != "")
+                if (indexof == -1)
                 {
-                    url = string.Format(url, param0, i);
+                    url = string.Format(catchWebSite.Url, param0, catchWebSite.Param1);
                 }
+                else
+                {
+                    url = string.Format(catchWebSite.Url, param0, i);
+                }
+
                 var mainhtml = get_html(url, catchWebSite.Encode, catchWebSite.Proxyurl, catchWebSite.Proxyuser, catchWebSite.Proxypw);
                 if (mainhtml == null)
                 {
+                    Console.WriteLine("ErrorGet:" + url);
                     continue;
                 }
                 foreach (var catchWebContentModel in catchWebSite.CatchWebContents)
@@ -165,7 +167,14 @@ namespace CatchWeb
                             }
                             else if (webContentPartsModel.IsDate)
                             {
-                                insertvalue = Convert.ToDateTime(text);
+                                try
+                                {
+                                    insertvalue = Convert.ToDateTime(text);
+                                }
+                                catch (Exception)
+                                {
+                                    insertvalue = new DateTime(1980, 1, 1);
+                                }
                             }
                             else
                             {
